@@ -1,0 +1,51 @@
+#версия docker-compose
+version: "3"
+
+#список сервисов (они же приложения)
+services:
+    node:
+#        image: iteplinsky/node:1
+        build:
+            # Контекст сборки образа
+            #(т.е. директория с образом)
+            context: $HOME/task/node/
+
+            dockerfile: ./Dockerfile
+        ports:
+            - "3000:3000"
+
+    express:
+#        image: iteplinsky/express:1
+        build:
+            context: $HOME/task/express/
+
+            dockerfile: ./Dockerfile
+        ports:
+            - "3001:3001"
+
+    statping:
+#        image: iteplinsky/statping:1
+        build:
+            context: $HOME/task_3/statping/
+
+            dockerfile: ./Dockerfile
+        ports:
+            - "8080:8080"
+        restart: always
+
+    nginx:
+#        image: iteplinsky/nginx:1
+        build:
+            context: $HOME/task_3/statping/
+
+            dockerfile: ./Dockerfile
+        ports:
+            - "3002:80"
+            - "443:443"
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        #nginx запустится после запуска следующих сервисов
+        depends_on:
+                - node
+                - express
+                - statping
